@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Card</title>
+    <!-- Google Font-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  
+  
+  <body>
+  
+  <canvas id="canvas"></canvas>
+    <div class="card" id="birthdayCard">
+      <div class="outside" onclick="togglePicture()">
+        <div class="front">
+          <p>Happy 23rd Birthday</p>
+          <div class="cake">
+            <div class="top-layer"></div>
+            <div class="middle-layer"></div>
+            <div class="bottom-layer"></div>
+            <div class="candle"></div>
+          </div>
+        </div>
+        <div class="back"></div>
+      </div>
+      <div class="inside">
+        <p>Wishing you a very happy birthday filled with love and laughter bebi!</p>
+        <h1>&#127873;</h1>
+	<p>The clue is 0*0*01</p>
+	<p>I'm marked on calendars far and wide, with candles glowing by my side. What am I?</p>
+        <input type="text" id="combinationInput" placeholder="Enter combination...">
+       <button onclick="checkCombination()">Submit</button>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+	
+	function Star(x,y,r,color){
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.rChange = 0.015;
+     this.vx = Math.floor(Math.random()*4+1);
+    this.vy = Math.floor(Math.random()*4+1);
+    this.color = color;
+}
+
+Star.prototype = {
+    constructor: Star,
+    render: function(){
+      context.beginPath();
+      context.arc(this.x, this.y, this.r, 0, 2*Math.PI, false);
+      context.shadowBlur = 8; 
+      context.shadowColor = "white";
+      context.fillStyle = this.color;
+      context.fill();
+    },
+    update: function(){
+      
+       if (this.r > 2 || this.r < .8){
+           this.rChange = - this.rChange;
+       }
+       this.r += this.rChange;
+    }
+}
+
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
+
+var C_WIDTH = canvas.width = window.innerWidth;
+var C_HEIGHT = canvas.height = window.innerHeight;
+
+
+function randomColor(){
+        var arrColors = ["ffffff", "ffecd3" , "bfcfff"];
+        return "#"+arrColors[Math.floor((Math.random()*3))];
+}
+        
+var arrStars = [];
+for(i = 0; i < 400; i++){
+    var randX = Math.floor((Math.random()*C_WIDTH)+1);
+    var randY = Math.floor((Math.random()*C_HEIGHT)+1);
+    var randR = Math.random() * 1.7 + .5;
+    
+    var star = new Star(randX, randY, randR, randomColor());
+    arrStars.push(star);
+}
+function update(){
+  for(i = 0; i < arrStars.length; i ++){
+    arrStars[i].update();
+  }
+}
+function animate(){
+  update();
+  /*
+    Remove comments below these for a cool trailing effect & comment
+    out the context.clearRect.
+  */
+    context.fillStyle = 'rgba(255, 255, 255, .1)';
+    context.fillRect(0,0,C_WIDTH,C_HEIGHT);
+    context.clearRect(0,0,C_WIDTH,C_HEIGHT);
+    for(var i = 0; i < arrStars.length; i++){
+      arrStars[i].render();
+    }
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+
+	function revealNextPuzzle() {
+        // Display the next puzzle or message
+        var insideDiv = document.querySelector('.inside');
+        insideDiv.innerHTML = `
+          <p>Clue: "I am at the highest floor watching the sky and the land within a room"</p>
+          <p>Here's the next puzzle:</p>
+          <p>I am small but mighty, granting access with ease,
+			Unlocking realms, where mysteries cease.
+			I fit in your hand, yet hold worlds within,
+			What am I, that opens where you've never been?(Find me before answering the question)</p>
+          <input type="text" id="answerInput" placeholder="Enter your answer...">
+          <button onclick="checkAnswer()">Submit Answer</button>
+        `;
+    }
+
+	function checkAnswer() {
+        var answer = document.getElementById('answerInput').value.toLowerCase();
+        if (answer === 'key') {
+          alert('Congratulations! NOW OPEN YOUR CABINET ;) Note: You can click the left side of this card');
+          // Add any additional actions here, such as revealing the surprise
+        } else {
+          alert('Oops! That\'s not the correct answer. Try again!');
+        }
+    }
+
+     function togglePicture() {
+       var card = document.getElementById('birthdayCard');
+	   card.classList.toggle('clicked');
+     }
+
+    function checkCombination() {
+		var combination = document.getElementById('combinationInput').value;
+		if (combination === '040201') {
+			revealNextPuzzle();
+		} else {
+			alert('Oops! Incorrect combination. Try again!');
+		}
+  }
+    </script>
+  </body>
+</html>
